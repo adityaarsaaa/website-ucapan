@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Christmas Envelope</title>
+    
+    <!-- Google Fonts: Font elegan untuk ucapan -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           VARIABEL & RESET GLOBAL
+           ========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --putih: #ffffff;
+            --merah: #e53935;
+            --emas: #ffd700;
+            --bayangan: rgba(0, 0, 0, 0.08);
+            --teks-gelap: #333333;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* ==========================================
+           ANIMASI SALJU (Opsional)
+           ========================================== */
+        .snow-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: var(--putih);
+            font-size: 1em;
+            opacity: 0.6;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* ==========================================
+           KONTAINER UTAMA
+           ========================================== */
+        .container {
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* ==========================================
+           GAYA AMPLOP (Keadaan Tertutup)
+           ========================================== */
+        .envelope {
+            position: absolute;
+            width: 280px;
+            height: 180px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            z-index: 20;
+        }
+
+        .envelope-body {
+            width: 100%;
+            height: 100%;
+            background: var(--putih);
+            box-shadow: 0 8px 25px var(--bayangan);
+            border-radius: 6px;
+            position: relative;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Lipatan amplop */
+        .flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flap-top {
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-bottom: 90px solid #f9f9f9;
+            top: 0;
+            left: 0;
+            transform-origin: top center;
+            z-index: 4;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .flap-bottom {
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 90px solid #f0f0f0;
+            bottom: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        /* Teks "BUKA" di depan amplop */
+        .open-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.6em;
+            font-weight: 400;
+            color: var(--merah);
+            letter-spacing: 3px;
+            z-index: 5;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* Hover effect */
+        .envelope:hover {
+            transform: scale(1.03);
+        }
+
+        .envelope:hover .open-text {
+            color: var(--emas);
+            transition: color 0.3s ease;
+        }
+
+        /* ==========================================
+           KONTEN SURAT (Tersembunyi hingga amplop dibuka)
+           ========================================== */
+        .letter {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5;
+        }
+
+        .letter-paper {
+            width: 100%;
+            height: 100%;
+            background: var(--putih);
+            border-radius: 8px;
+            box-shadow: 0 15px 35px var(--bayangan);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            position: relative;
+        }
+
+        /* ==========================================
+           GAYA TEKS UCAPAN
+           ========================================== */
+        .greeting {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.4s;
+        }
+
+        .greeting h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            color: var(--merah);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .greeting .emoji {
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+
+        /* ==========================================
+           KELAS AKTIF (Setelah Diklik)
+           ========================================== */
+        .envelope.opening {
+            transform: scale(0.92);
+            opacity: 0.3;
+        }
+
+        .envelope.opening .flap-top {
+            transform: rotateX(-180deg);
+            opacity: 0.7;
+        }
+
+        .letter.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            z-index: 15;
+        }
+
+        .greeting.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================
+           DESAIN RESPONSIF
+           ========================================== */
+        @media (max-width: 480px) {
+            .envelope {
+                width: 240px;
+                height: 150px;
+            }
+
+            .flap-top {
+                border-left: 120px solid transparent;
+                border-right: 120px solid transparent;
+                border-bottom: 75px solid #f9f9f9;
+            }
+
+            .flap-bottom {
+                border-left: 120px solid transparent;
+                border-right: 120px solid transparent;
+                border-top: 75px solid #f0f0f0;
+            }
+
+            .letter {
+                width: 220px;
+                height: 280px;
+            }
+
+            .greeting h1 {
+                font-size: 2.2em;
+            }
+
+            .open-text {
+                font-size: 1.3em;
+            }
+        }
+
+        /* Kelas tersembunyi */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Kontainer salju -->
+    <div class="snow-container" id="snowContainer"></div>
+
+    <!-- Kontainer utama -->
+    <div class="container">
+        <!-- Amplop (Tampilan Awal) -->
+        <div class="envelope" id="envelope">
+            <div class="envelope-body">
+                <div class="flap flap-top"></div>
+                <div class="flap flap-bottom"></div>
+                <div class="open-text">BUKA</div>
+            </div>
+        </div>
+
+        <!-- Surat (Tersembunyi hingga amplop dibuka) -->
+        <div class="letter" id="letter">
+            <div class="letter-paper">
+                <div class="greeting" id="greeting">
+                    <h1>Merry Christmas <span class="emoji">🎄</span></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // FUNGSI JAVASCRIPT
+        // ==========================================
+
+        // Elemen DOM
+        const envelope = document.getElementById('envelope');
+        const letter = document.getElementById('letter');
+        const greeting = document.getElementById('greeting');
+        const snowContainer = document.getElementById('snowContainer');
+
+        // Status apakah amplop sudah dibuka
+        let isOpen = false;
+
+        // ==========================================
+        // FUNGSI MEMBUAT SALJU
+        // ==========================================
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            snowflake.style.fontSize = (Math.random() * 8 + 10) + 'px';
+            snowflake.style.opacity = Math.random() * 0.4 + 0.3;
+            
+            snowContainer.appendChild(snowflake);
+
+            // Hapus salju setelah animasi selesai
+            setTimeout(() => {
+                if (snowflake.parentNode) {
+                    snowflake.remove();
+                }
+            }, 8000);
+        }
+
+        // Buat salju secara berkala
+        setInterval(createSnowflake, 400);
+
+        // Buat salju awal saat halaman dimuat
+        for (let i = 0; i < 12; i++) {
+            setTimeout(createSnowflake, i * 300);
+        }
+
+        // ==========================================
+        // EVENT KLIK AMPLOP
+        // ==========================================
+        envelope.addEventListener('click', function() {
+            if (isOpen) return; // Cegah klik berulang
+
+            isOpen = true;
+            
+            // 1. Mulai animasi membuka amplop
+            envelope.classList.add('opening');
+            
+            // 2. Tampilkan surat setelah animasi amplop dimulai
+            setTimeout(() => {
+                letter.classList.add('show');
+            }, 300);
+            
+            // 3. Tampilkan teks ucapan dengan delay
+            setTimeout(() => {
+                greeting.classList.add('show');
+            }, 700);
+            
+            // 4. Sembunyikan amplop setelah animasi selesai
+            setTimeout(() => {
+                envelope.style.display = 'none';
+            }, 900);
+        });
+
+        // ==========================================
+        // RESET AMPLOP (Double-click surat)
+        // ==========================================
+        letter.addEventListener('dblclick', function() {
+            isOpen = false;
+            envelope.style.display = 'block';
+            envelope.classList.remove('opening');
+            letter.classList.remove('show');
+            greeting.classList.remove('show');
+            
+            // Reset animasi teks untuk dapat diputar ulang
+            setTimeout(() => {
+                greeting.style.animation = 'none';
+                greeting.offsetHeight; // Trigger reflow
+                greeting.style.animation = '';
+            }, 50);
+        });
+
+        // ==========================================
+        // PENJELASAN KODE
+        // ==========================================
+        /*
+         * Alur Kerja:
+         * 1. Halaman dimuat → Amplop putih muncul di tengah
+         * 2. Salju jatuh otomatis (jika diaktifkan)
+         * 3. Klik amplop → Animasi buka dimulai
+         * 4. Lipatan atas amplop terbuka (rotateX)
+         * 5. Surat muncul dari bawah (translateY)
+         * 6. Teks "Merry Christmas 🎄" muncul bertahap
+         * 7. Double-click surat untuk mengulang
+         * 
+         * Teknik Utama:
+         * - CSS transitions untuk animasi halus
+         * - transform-origin untuk rotasi lipatan
+         * - z-index untuk tumpukan elemen
+         * - setTimeout untuk penundaan animasi
+         * - Pembuatan elemen DOM dinamis untuk salju
+         */
+    </script>
+</body>
+</html>
